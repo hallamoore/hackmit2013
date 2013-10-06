@@ -1,0 +1,1 @@
+{'response':{'action':'click','x':0.125,'y':0.8375}}

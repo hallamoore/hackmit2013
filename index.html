@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			canvas { width: 100%; height: 100% }
+			body {
+				background-color: #222222;
+				margin: 0px;
+				overflow: hidden;
+			}
+			</style>
+	</head>
+	<body>
+		<script src="lib/three/build/three.min.js"></script>
+		<script>
+			// THREE.PerspectiveCamera.prototype.setRotateX = function (deg) {
+			//     if (typeof (deg) == 'number' && parseInt(deg) == deg) {
+			//         this.rotation.x = deg * (Math.PI / 180);
+			//     }
+			// };
+			// THREE.PerspectiveCamera.prototype.setRotateY = function (deg) {
+			//     if (typeof (deg) == 'number' && parseInt(deg) == deg) {
+			//         this.rotation.y = deg * (Math.PI / 180);
+			//     }
+			// };
+			// THREE.PerspectiveCamera.prototype.setRotateZ = function (deg) {
+			//     if (typeof (deg) == 'number' && parseInt(deg) == deg) {
+			//         this.rotation.z = deg * (Math.PI / 180);
+			//     }
+			// };
+			// THREE.PerspectiveCamera.prototype.getRotateX = function () {
+			//     return Math.round(this.rotation.x * (180 / Math.PI));
+			// };
+			// THREE.PerspectiveCamera.prototype.getRotateY = function () {
+			//     return Math.round(this.rotation.y * (180 / Math.PI));
+			// };
+			// THREE.PerspectiveCamera.prototype.getRotateZ = function () {
+			//     return Math.round(this.rotation.z * (180 / Math.PI));
+			// };
+
+			var camera_radius = 10, phi = 60, onMouseDownPhi = 60;
+			function toBox(x, y, z) {
+			    document.getElementById('box').innerHTML = 'X: ' + x + '<br />Y: ' + y + '<br />Z: ' + z;
+			}
+			const KEYUP    = 38;        // up key
+	        const KEYDOWN  = 40;        // down key
+	        const KEYLEFT  = 37;        // left key
+	        const KEYRIGHT = 39;        // right key
+	        const VIEW_INCREMENT    = 1;
+	        const Z_KEY = 90;
+
+	        var theta = 0;
+
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+
+			/* CUBE */
+			var geometry = new THREE.CubeGeometry(1,1,1);
+			var material = new THREE.MeshLambertMaterial({color: 0xff0000});
+			var cube = new THREE.Mesh(geometry, material);
+			scene.add(cube);
+
+			/* LIGHTING */
+			var spotLight = new THREE.SpotLight( 0xffffff );
+			spotLight.position.set( 10, 10, 10 );
+			spotLight.castShadow = true;
+			spotLight.shadowMapWidth = 1024;
+			spotLight.shadowMapHeight = 1024;
+			spotLight.shadowCameraNear = 500;
+			spotLight.shadowCameraFar = 4000;
+			spotLight.shadowCameraFov = 30;
+
+			scene.add( spotLight );
+
+			// camera.position.x = -1;
+			// camera.position.y = -1;
+			// camera.position.z = 3;
+
+			var render = function () {
+				requestAnimationFrame(render);
+
+				// cube.rotation.x += 0.1;
+				// cube.rotation.y += 0.1;
+				camera.position.x = camera_radius * Math.cos( theta );
+				camera.position.y = camera_radius;
+				camera.position.z = camera_radius * Math.sin( theta );
+
+				camera.lookAt( scene.position );
+
+				renderer.render(scene, camera);
+			};
+
+			var onDocumentMouseWheel = function(evt){
+				camera_radius -= event.wheelDeltaY;
+				camera.position.x = camera_radius * Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+				camera.position.y = camera_radius * Math.sin( phi * Math.PI / 360 );
+				camera.position.z = camera_radius * Math.cos( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+				camera.updateMatrix();
+				render();
+			};
+
+			var addCube = function(evt){
+				var geometry = new THREE.CubeGeometry(1,1,1);
+				var material = new THREE.MeshLambertMaterial({color: 0xff0000});
+				var cube = new THREE.Mesh(geometry, material);
+				scene.add(cube);
+				cube.position.x = evt.x / 100;
+				cube.position.y = evt.y / 100;
+				cube.position.z = 10;
+			};
+
+			render();
+
+			document.addEventListener("keydown", function(evt){
+				switch(evt.keyCode){
+					case KEYLEFT:
+						theta += 0.25;
+						break;
+					case KEYRIGHT:
+						theta -= 0.25;
+						break;
+				}
+			});
+
+			document.addEventListener("mousewheel", onDocumentMouseWheel);
+			document.addEventListener("click", addCube);
+
+			// requestAnimationFrame(update);
+			// var update = function(){
+			// 	requestAnimationFrame(update);
+			// 	var delta = clock.getDelta();
+			// 	controls.update(delta);
+			// 	render();
+			// 	document.addEventListener("keydown", function(evt){
+			// 		var keyCode = evt.keyCode;
+			// 		switch(keyCode) {
+			// 			case KEYUP:
+			// 				if ( camera.getRotateX() < 90 )
+		 //                        camera.setRotateX( camera.getRotateX() + VIEW_INCREMENT );
+		 //                    break;
+			// 			case KEYLEFT:
+			// 				camera.setRotateY( camera.getRotateY() + VIEW_INCREMENT );
+			// 				break;
+			// 			case KEYRIGHT:
+			// 				camera.setRotateY( camera.getRotateY() - VIEW_INCREMENT );
+		 //                    break;
+			// 		}
+
+			// 		toBox( camera.getRotateX(), camera.getRotateY(), camera.getRotateZ() );
+			// 	});
+			// }
+
+
+		</script>
+	</body>
+</html>
